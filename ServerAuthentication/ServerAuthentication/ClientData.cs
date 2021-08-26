@@ -9,8 +9,19 @@ namespace ServerAuthentication
 {
     public class ClientData
     {
+        /// <summary>
+        /// Private Integer for the ClientID for incoming client login
+        /// </summary>
         private int ClientID;
+        
+        /// <summary>
+        /// Settings for the ClientAuthenticaton
+        /// </summary>
         private bool RequireIPMatch;
+        
+        /// <summary>
+        /// Settings for the ClientAuthenticaton
+        /// </summary>
         private bool RequireHostnameMatch;
 
         private Server _server;
