@@ -8,10 +8,9 @@ namespace LoginAuthentication
 {
     public class Output
     {
-        public static void Message(OutputType type, dynamic message)
-        {
-            Console.WriteLine(string.Format("[LoginAuthentication][{0}] - {1}", Enum.GetName(type.GetType(), type), message));
-        }
+        public static void Message(OutputType type, dynamic message) => 
+            Console.WriteLine(string.Format("[LoginAuthentication][{0}] - {1}", 
+                Enum.GetName(type.GetType(), type), message));
 
     }
 
