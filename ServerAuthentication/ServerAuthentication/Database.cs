@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JsonDB;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace ServerAuthentication
 {
@@ -30,6 +32,7 @@ namespace ServerAuthentication
         /// <param name="CollectionName"></param>
         public static void StartDatabase(string DatabaseName, string CollectionName)
         {
+            Output.Message(OutputType.Info, "Starting Database...");
             // This leaves the option of Mongo Storage Viable, due to how JsonDB & MongoDB are formatted
             // JsonDB takes direct inspiration from MongoDB in terms of Items, Collections, and Database structuring
             if (server.m_LocalStorageEnabled)
@@ -38,7 +41,10 @@ namespace ServerAuthentication
                 collection = new Collection(db, CollectionName, false);
 
                 db.CheckDB();
+                Output.Message(OutputType.Info, "Database has been checked");
+
                 collection.InitializeCollection();
+                Output.Message(OutputType.Info, "Collection has been initialized");
             }
             else
             {
@@ -52,6 +58,8 @@ namespace ServerAuthentication
                 mongoDatabase = mongoClient.GetDatabase(DatabaseName);
                 mongoCollection = mongoDatabase.GetCollection<BsonDocument>(CollectionName);
             }
+
+            Output.Message(OutputType.Info, "Database is ready!");
         }
 
         /// <summary>
@@ -66,7 +74,6 @@ namespace ServerAuthentication
         /// <param name="bsonDocument"></param>
         public static void CreateNewItem(dynamic id, ClientDatabase clientData = null, BsonDocument bsonDocument = null)
         {
-            // Use Local Storage if Enabled
             if (server.m_LocalStorageEnabled)
             {
                 if (string.IsNullOrEmpty(clientData.ToString()))
@@ -78,17 +85,14 @@ namespace ServerAuthentication
                 if (clientData.AuthenticationString != null)
                     item.AddItem(id, clientData);
             }
-            // If Local Storage is not enabled, then we assume that MongoDB is being used
             else
             {
-                // If for whatever reason, the user decides to not input a BsonDocument, throw an error
                 if (bsonDocument.IsBsonNull)
                 {
                     Output.Message(OutputType.Error, "BsonDocument is empty");
                     return;
                 }
-
-                // As the Method States, we are creating a new Item, not editing an existing one    
+   
                 var collection = mongoCollection.Find(new BsonDocument("_id", id)).ToList();
                 if (collection.Count >= 1)
                 {
