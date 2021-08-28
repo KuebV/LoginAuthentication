@@ -33,12 +33,17 @@ namespace ServerAuthentication
         public static void StartDatabase(string DatabaseName, string CollectionName)
         {
             Output.Message(OutputType.Info, "Starting Database...");
+
             // This leaves the option of Mongo Storage Viable, due to how JsonDB & MongoDB are formatted
             // JsonDB takes direct inspiration from MongoDB in terms of Items, Collections, and Database structuring
+
             if (server.m_LocalStorageEnabled)
             {
                 db = new JsonDB.Database(DatabaseName);
                 collection = new Collection(db, CollectionName, false);
+
+                // It should be mentioned for future me to read, there needs to be Info Messages here because of how JsonDB Loads
+                // tl;dr, its too quick and needs to be slowed down by a few miliseconds, and an output fixes it.
 
                 db.CheckDB();
                 Output.Message(OutputType.Info, "Database has been checked");
