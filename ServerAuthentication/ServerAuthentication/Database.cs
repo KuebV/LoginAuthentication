@@ -15,7 +15,7 @@ namespace ServerAuthentication
         private static JsonDB.Database db;
         private static Collection collection;
         private static Server server;
-        private static Item item;
+        public static Item item;
         #endregion
 
         #region Private Variables for MongoDB
