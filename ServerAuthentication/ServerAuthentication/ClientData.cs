@@ -85,7 +85,7 @@ namespace ServerAuthentication
 
                 if (!RequireIPMatch && !RequireHostnameMatch)
                     return LoginResponse.Good;
-
+                #endregion
 
             }
 
