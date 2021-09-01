@@ -1,13 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using JsonDB;
-using LoginAuthentication;
-using Newtonsoft.Json.Linq;
 
-namespace ServerAuthentication
+namespace LoginAuthentication
 {
     public class ClientData
     {
@@ -38,6 +32,37 @@ namespace ServerAuthentication
             RequireIPMatch = settings.IPMatch;
         }
 
+        private string GetUnixTime() => DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+
+        /// <summary>
+        /// Handles the Client Disconnect
+        /// Removes One-Time-Code & Cleans Up anything else
+        /// </summary>
+        public void HandleClientDisconnect() => Server.ClientInformation.Remove(ClientID);
+
+        /// <summary>
+        /// Handle Client Data 
+        /// Returns the One-Time-Code
+        /// </summary>
+        /// <returns></returns>
+        public string HandleClientConnect()
+        {
+            string hashedTime = Server.ComputeSha256Hash(GetUnixTime());
+            string onetimecode = hashedTime.Substring(0, hashedTime.Length / 6);
+            Server.ClientInformation.Add(ClientID, onetimecode);
+
+            return onetimecode;
+        }
+
+        public string GetOneTimeCode()
+        {
+            string code;
+            if (Server.ClientInformation.TryGetValue(ClientID, out code))
+                return code;
+
+            return null;
+        }
+
         /// <summary>
         /// Handle the Login Data, returns the Login Response
         /// </summary>
@@ -66,6 +91,9 @@ namespace ServerAuthentication
                 #endregion
 
                 #region Check Authentication String
+
+                Output.Message(OutputType.Error, string.Format("{0} --> {1}", ServerHash, localAuthenticationString));
+
                 if (ServerHash != localAuthenticationString)
                     return LoginResponse.ServerError;
 
@@ -86,6 +114,7 @@ namespace ServerAuthentication
                 if (!RequireIPMatch && !RequireHostnameMatch)
                     return LoginResponse.Good;
                 #endregion
+
 
             }
 
