@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JsonDB;
 using LoginAuthentication;
+using LoginAuthentication.Foundation;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;

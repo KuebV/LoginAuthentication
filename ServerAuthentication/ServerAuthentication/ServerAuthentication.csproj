@@ -7,8 +7,8 @@
     <ProjectGuid>{6338B1F0-7E1E-409D-8E5D-E712395B6199}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ServerAuthentication</RootNamespace>
-    <AssemblyName>ServerAuthentication</AssemblyName>
+    <RootNamespace>LoginAuthentication</RootNamespace>
+    <AssemblyName>LoginAuthentication</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -118,7 +118,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientData.cs" />
-    <Compile Include="ClientFoundation.cs" />
+    <Compile Include="Foundation\ClientDatabase.cs" />
+    <Compile Include="Foundation\ClientDatabaseEnum.cs" />
+    <Compile Include="Foundation\DataRetreive.cs" />
+    <Compile Include="Foundation\LoginAuthenticationSettings.cs" />
+    <Compile Include="Foundation\LoginResponse.cs" />
     <Compile Include="ServerSide\Database.cs" />
     <Compile Include="Output.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

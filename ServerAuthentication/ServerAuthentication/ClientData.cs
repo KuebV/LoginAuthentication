@@ -1,5 +1,6 @@
 using System;
 using JsonDB;
+using LoginAuthentication.Foundation;
 using LoginAuthentication.ServerSide;
 
 namespace LoginAuthentication
@@ -72,19 +73,4 @@ namespace LoginAuthentication
         }
     }
 
-    public class LoginAuthenticationSettings
-    {
-        public bool IPMatch { get; set; }
-        public bool HostNameMatch { get; set; }
-    }
-
-    public enum LoginResponse
-    {
-        Good = 0,
-        Failed = 1,
-        IPMatch_False = 2,
-        HostNameMatch_False = 3,
-        ServerError = 4,
-        Unknown = 5
-    }
 }
