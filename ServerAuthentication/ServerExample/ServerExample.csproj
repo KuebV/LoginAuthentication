@@ -36,6 +36,9 @@
     <Reference Include="com.benjaminapplegate.EasyNetworking">
       <HintPath>..\..\..\..\..\Downloads\com.benjaminapplegate.EasyNetworking.dll</HintPath>
     </Reference>
+    <Reference Include="LoginAuthentication">
+      <HintPath>..\..\..\..\..\source\repos\LoginAuthentication\LoginAuthentication\bin\Debug\LoginAuthentication.dll</HintPath>
+    </Reference>
     <Reference Include="ServerAuthentication">
       <HintPath>..\ServerAuthentication\bin\Debug\ServerAuthentication.dll</HintPath>
     </Reference>

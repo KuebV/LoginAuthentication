@@ -20,6 +20,8 @@ namespace LoginAuthentication
         /// </summary>
         private bool RequireHostnameMatch;
 
+        public string ClientIdentity;
+
         /// <summary>
         /// Constructor for the Client Data Class
         /// </summary>
@@ -45,13 +47,11 @@ namespace LoginAuthentication
         /// Returns the One-Time-Code
         /// </summary>
         /// <returns></returns>
-        public string HandleClientConnect()
+        public void GenerateOneTimeCode()
         {
             string hashedTime = Server.ComputeSha256Hash(GetUnixTime());
             string onetimecode = hashedTime.Substring(0, hashedTime.Length / 6);
             Server.ClientInformation.Add(ClientID, onetimecode);
-
-            return onetimecode;
         }
 
         public string GetOneTimeCode()
@@ -82,7 +82,7 @@ namespace LoginAuthentication
                 Item item = Database.item;
 
                 var clientData = item.FindItem(ClientIdentity);
-                ClientFoundation clientFoundation = new ClientFoundation(clientData.ToString());
+                Foundation clientFoundation = new Foundation(clientData.ToString());
 
                 #region Locally Stored Client Database
                 string localIP = clientFoundation.GetValueFromJson(ClientDatabaseEnum.IPAddress);
@@ -91,8 +91,7 @@ namespace LoginAuthentication
                 #endregion
 
                 #region Check Authentication String
-
-                Output.Message(OutputType.Error, string.Format("{0} --> {1}", ServerHash, localAuthenticationString));
+                Output.Message(OutputType.Info, "Matching Hashed Authentication Strings");
 
                 if (ServerHash != localAuthenticationString)
                     return LoginResponse.ServerError;
@@ -126,6 +125,8 @@ namespace LoginAuthentication
         {
             string stringBuilder = string.Format("{0},{1}", IP, Hostname);
             string UserHash = Server.ComputeSha256Hash(stringBuilder);
+
+            ClientIdentity = UserHash;
 
             string UsernameHash = UserHash.Substring(0, UserHash.Length / 4);
 

@@ -4,17 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JsonDB;
+using LoginAuthentication;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace ServerAuthentication
+namespace LoginAuthentication
 {
     public class Database
     {
         #region Private Variables for JsonDB
         private static JsonDB.Database db;
         private static Collection collection;
-        private static Server server;
         public static Item item;
         #endregion
 
@@ -37,10 +39,11 @@ namespace ServerAuthentication
             // This leaves the option of Mongo Storage Viable, due to how JsonDB & MongoDB are formatted
             // JsonDB takes direct inspiration from MongoDB in terms of Items, Collections, and Database structuring
 
-            if (server.m_LocalStorageEnabled)
+            if (Server.m_LocalStorageEnabled)
             {
                 db = new JsonDB.Database(DatabaseName);
                 collection = new Collection(db, CollectionName, false);
+                item = new Item(db, collection);
 
                 // It should be mentioned for future me to read, there needs to be Info Messages here because of how JsonDB Loads
                 // tl;dr, its too quick and needs to be slowed down by a few miliseconds, and an output fixes it.
@@ -53,13 +56,13 @@ namespace ServerAuthentication
             }
             else
             {
-                if (string.IsNullOrEmpty(server.m_MongoURL))
+                if (string.IsNullOrEmpty(Server.m_MongoURL))
                 {
                     Output.Message(OutputType.Error, "MongoURL is Empty!");
                     return;
                 }
 
-                mongoClient = new MongoClient(server.m_MongoURL);
+                mongoClient = new MongoClient(Server.m_MongoURL);
                 mongoDatabase = mongoClient.GetDatabase(DatabaseName);
                 mongoCollection = mongoDatabase.GetCollection<BsonDocument>(CollectionName);
             }
@@ -79,14 +82,13 @@ namespace ServerAuthentication
         /// <param name="bsonDocument"></param>
         public static void CreateNewItem(dynamic id, ClientDatabase clientData = null, BsonDocument bsonDocument = null)
         {
-            if (server.m_LocalStorageEnabled)
+            if (Server.m_LocalStorageEnabled)
             {
                 if (string.IsNullOrEmpty(clientData.ToString()))
                 {
                     Output.Message(OutputType.Error, "ClientData is Empty!");
                     return;
                 }
-                item = new Item(db, collection);
                 if (clientData.AuthenticationString != null)
                     item.AddItem(id, clientData);
             }
@@ -97,7 +99,7 @@ namespace ServerAuthentication
                     Output.Message(OutputType.Error, "BsonDocument is empty");
                     return;
                 }
-   
+
                 var collection = mongoCollection.Find(new BsonDocument("_id", id)).ToList();
                 if (collection.Count >= 1)
                 {
@@ -107,6 +109,7 @@ namespace ServerAuthentication
 
             }
         }
+
     }
 
     public class ClientDatabase
@@ -115,6 +118,14 @@ namespace ServerAuthentication
         public string Hostname { get; set; }
         public string IPAddress { get; set; }
         public string AuthenticationString { get; set; }
+    }
+
+    public enum ClientDatabaseEnum
+    {
+        _id = 0,
+        Hostname = 1,
+        IPAddress = 2,
+        AuthenticationString = 3
     }
 
 }

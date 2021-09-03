@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json;
-using ServerAuthentication;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,14 @@ using System.Threading.Tasks;
 
 namespace LoginAuthentication
 {
-    public class ClientFoundation
+    public class Foundation
     {
-        public ClientFoundation(string JsonData)
+        /// <summary>
+        /// Constructor
+        /// All Methods & Variables are used Internally
+        /// </summary>
+        /// <param name="JsonData"></param>
+        public Foundation(string JsonData)
         {
             JsonClientData = JsonData;
         }
@@ -22,7 +28,7 @@ namespace LoginAuthentication
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public string GetValueFromJson(ClientDatabaseEnum value)
+        internal string GetValueFromJson(ClientDatabaseEnum value)
         {
             ClientDatabase clientData = JsonConvert.DeserializeObject<ClientDatabase>(JsonClientData);
             switch (value)
@@ -36,8 +42,8 @@ namespace LoginAuthentication
                 case ClientDatabaseEnum._id:
                     return clientData._id;
             }
-
             return null;
         }
     }
+
 }

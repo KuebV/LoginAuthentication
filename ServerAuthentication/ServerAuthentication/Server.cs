@@ -5,20 +5,19 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerAuthentication
+namespace LoginAuthentication
 {
     public class Server
     {
         /// <summary>
         /// Part of the AuthenticationServer Constructor, whether or not the LocalStorage is enabled
         /// </summary>
-        public readonly bool m_LocalStorageEnabled;
+        public static bool m_LocalStorageEnabled;
 
         /// <summary>
         /// The MongoURL String
         /// </summary>
-        public readonly string m_MongoURL;
-
+        public static string m_MongoURL;
 
         /// <summary>
         /// AuthenticationServer constructor
