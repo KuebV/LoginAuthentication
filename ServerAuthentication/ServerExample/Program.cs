@@ -5,8 +5,8 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using ServerAuthentication;
 using System.IO;
+using LoginAuthentication;
 
 namespace ServerExample
 {
@@ -30,31 +30,32 @@ namespace ServerExample
         static void Main(string[] args)
         {
 
-            _server = new EasyServer(5000, 7700);
-            _server.AddPacketHandler((int)ServerPackets.Message, ServerHandlePacket.HandleMessage);
-            _server.AddPacketHandler((int)ServerPackets.ClientDisconnecting,
-                ServerHandlePacket.HandleClientDisconnect);
+            Server server = new Server(UseLocalStorage: true, MongoURL: null);
+            LoginAuthentication.Database.StartDatabase("LocalAuthentication", "ExampleAuthentication");
 
-
-            _server.clientConnection = ClientConnect;
-            _server.serverFullConnection = ServerFullConnect;
-
-            _server.StartServer();
-
-            string localDirectory = Directory.GetCurrentDirectory();
-
-            authServer = new Server(UseLocalStorage: true);
-            Database.StartDatabase("LocalDatabase", "ClientIdentities");
-
-            bool serverRunning = true;
-            while (serverRunning)
+            var clientSettings = new ClientAuthenticationSettings
             {
-                if (Console.ReadLine().Equals("exit"))
-                {
-                    ServerSendPacket.SendServerClosing();
-                    _server.Stop();
-                    Environment.Exit(0);
-                }
+                HostNameMatch = false,
+                IPMatch = false
+            };
+
+
+            ClientData clientData = new ClientData(1, clientSettings);
+            LoginResponse responseFromServer = clientData.HandleLoginData("127.0.0.1",
+                "DESKTOP-D219KL",
+                "3c2b70d35fb3cae66b6fdfe9d5b1650a86a24de1a81e5f24aa23ffd9c2640828",
+                "3C2B70D35FB3CA");
+
+            switch (responseFromServer)
+            {
+                case LoginResponse.Good:
+                    clientData.GenerateOneTimeCode();
+                    string code = clientData.GetOneTimeCode();
+                    Console.WriteLine(code);
+                    break;
+                default:
+                    Console.WriteLine("Something broke");
+                    break;
             }
         }
     }
