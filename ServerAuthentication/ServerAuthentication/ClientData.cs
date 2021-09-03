@@ -1,5 +1,6 @@
 using System;
 using JsonDB;
+using LoginAuthentication.ServerSide;
 
 namespace LoginAuthentication
 {
@@ -10,28 +11,15 @@ namespace LoginAuthentication
         /// </summary>
         private int ClientID;
 
-        /// <summary>
-        /// Settings for the ClientAuthenticaton
-        /// </summary>
-        private bool RequireIPMatch;
-
-        /// <summary>
-        /// Settings for the ClientAuthenticaton
-        /// </summary>
-        private bool RequireHostnameMatch;
-
         public string ClientIdentity;
 
         /// <summary>
         /// Constructor for the Client Data Class
         /// </summary>
         /// <param name="clientId"></param>
-        public ClientData(int clientId, ClientAuthenticationSettings settings)
+        public ClientData(int clientId, LoginAuthenticationSettings settings)
         {
             ClientID = clientId;
-
-            RequireHostnameMatch = settings.HostNameMatch;
-            RequireIPMatch = settings.IPMatch;
         }
 
         private string GetUnixTime() => DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
@@ -63,64 +51,6 @@ namespace LoginAuthentication
             return null;
         }
 
-        /// <summary>
-        /// Handle the Login Data, returns the Login Response
-        /// </summary>
-        /// <param name="IP"></param>
-        /// <param name="Hostname"></param>
-        /// <param name="AuthString"></param>
-        /// <returns></returns>
-        public LoginResponse HandleLoginData(string IP, string Hostname, string AuthString, string ClientIdentity)
-        {
-            // If the Server is running off of the Local Storage Option
-            if (Server.m_LocalStorageEnabled)
-            {
-                // Create the Server-Side Hash
-                string stringBuilder = string.Format("{0},{1}", IP, Hostname);
-                string ServerHash = Server.ComputeSha256Hash(stringBuilder);
-
-                Item item = Database.item;
-
-                var clientData = item.FindItem(ClientIdentity);
-                Foundation clientFoundation = new Foundation(clientData.ToString());
-
-                #region Locally Stored Client Database
-                string localIP = clientFoundation.GetValueFromJson(ClientDatabaseEnum.IPAddress);
-                string localHostName = clientFoundation.GetValueFromJson(ClientDatabaseEnum.Hostname);
-                string localAuthenticationString = clientFoundation.GetValueFromJson(ClientDatabaseEnum.AuthenticationString);
-                #endregion
-
-                #region Check Authentication String
-                Output.Message(OutputType.Info, "Matching Hashed Authentication Strings");
-
-                if (ServerHash != localAuthenticationString)
-                    return LoginResponse.ServerError;
-
-                if (ServerHash != AuthString)
-                    return LoginResponse.Failed;
-                #endregion
-
-                #region 
-                if (RequireIPMatch && IP == localIP && RequireHostnameMatch && Hostname == localHostName)
-                    return LoginResponse.Good;
-
-                if (RequireHostnameMatch && Hostname != localHostName)
-                    return LoginResponse.HostNameMatch_False;
-
-                if (RequireIPMatch && IP != localIP)
-                    return LoginResponse.IPMatch_False;
-
-                if (!RequireIPMatch && !RequireHostnameMatch)
-                    return LoginResponse.Good;
-                #endregion
-
-
-            }
-
-            return LoginResponse.Unknown;
-
-        }
-
         public void CreateUser(string IP, string Hostname)
         {
             string stringBuilder = string.Format("{0},{1}", IP, Hostname);
@@ -138,11 +68,11 @@ namespace LoginAuthentication
                 IPAddress = IP
             };
 
-            Database.CreateNewItem(UsernameHash, builder);
+            ServerSide.Database.CreateNewItem(UsernameHash, builder);
         }
     }
 
-    public class ClientAuthenticationSettings
+    public class LoginAuthenticationSettings
     {
         public bool IPMatch { get; set; }
         public bool HostNameMatch { get; set; }

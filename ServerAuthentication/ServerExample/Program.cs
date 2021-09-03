@@ -31,7 +31,7 @@ namespace ServerExample
         {
 
             Server server = new Server(UseLocalStorage: true, MongoURL: null);
-            LoginAuthentication.Database.StartDatabase("LocalAuthentication", "ExampleAuthentication");
+            Database.StartDatabase("LocalAuthentication", "ExampleAuthentication");
 
             var clientSettings = new ClientAuthenticationSettings
             {

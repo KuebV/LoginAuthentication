@@ -10,7 +10,7 @@ using MongoDB.Driver;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LoginAuthentication
+namespace LoginAuthentication.ServerSide
 {
     public class Database
     {
@@ -110,22 +110,6 @@ namespace LoginAuthentication
             }
         }
 
-    }
-
-    public class ClientDatabase
-    {
-        public string _id { get; set; }
-        public string Hostname { get; set; }
-        public string IPAddress { get; set; }
-        public string AuthenticationString { get; set; }
-    }
-
-    public enum ClientDatabaseEnum
-    {
-        _id = 0,
-        Hostname = 1,
-        IPAddress = 2,
-        AuthenticationString = 3
     }
 
 }
