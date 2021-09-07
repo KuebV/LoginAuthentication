@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.IO;
 using LoginAuthentication;
 using LoginAuthentication.ServerSide;
+using LoginAuthentication.Foundation;
 
 namespace ServerExample
 {
@@ -34,24 +35,24 @@ namespace ServerExample
             Server server = new Server(UseLocalStorage: true, MongoURL: null);
             Database.StartDatabase("LocalAuthentication", "ExampleAuthentication");
 
-            var clientSettings = new ClientAuthenticationSettings
+            var clientSettings = new LoginAuthenticationSettings
             {
                 HostNameMatch = false,
                 IPMatch = false
             };
 
-
-            ClientData clientData = new ClientData(1);
-            LoginResponse responseFromServer = clientData.HandleLoginData("127.0.0.1",
+            LoginResponse responseFromServer = server.HandleLoginData("127.0.0.1",
                 "DESKTOP-D219KL",
                 "3c2b70d35fb3cae66b6fdfe9d5b1650a86a24de1a81e5f24aa23ffd9c2640828",
                 "3C2B70D35FB3CA");
 
+            ClientData client = new ClientData(1, clientSettings);
+
             switch (responseFromServer)
             {
                 case LoginResponse.Good:
-                    clientData.GenerateOneTimeCode();
-                    string code = clientData.GetOneTimeCode();
+                    client.GenerateOneTimeCode();
+                    string code = client.GetOneTimeCode();
                     Console.WriteLine(code);
                     break;
                 default:
