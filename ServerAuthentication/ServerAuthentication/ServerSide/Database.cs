@@ -27,6 +27,8 @@ namespace LoginAuthentication.ServerSide
         public static IMongoCollection<BsonDocument> mongoCollection;
         #endregion
 
+        public static Database Instance;
+
 
         /// <summary>
         /// Start the Database for Local Storage

@@ -77,7 +77,7 @@ namespace LoginAuthentication.ServerSide
                 Item item = ServerSide.Database.item;
 
                 var clientData = item.FindItem(ClientIdentity);
-                Foundation clientFoundation = new Foundation(clientData.ToString());
+                Foundation.DataRetreive clientFoundation = new Foundation.DataRetreive(clientData.ToString());
 
                 #region Locally Stored Client Database
                 string localIP = clientFoundation.GetValueFromJson(ClientDatabaseEnum.IPAddress);
@@ -109,6 +109,31 @@ namespace LoginAuthentication.ServerSide
                     return LoginResponse.Good;
                 #endregion
 
+
+            }
+
+            if (!string.IsNullOrEmpty(m_MongoURL))
+            {
+                string stringBuilder = string.Format("{0},{1}", IP, Hostname);
+                string ServerHash = Server.ComputeSha256Hash(stringBuilder);
+
+                DataRetreive dataRetreive = new DataRetreive(JsonData: null, _id: ClientIdentity);
+
+                #region MongoDB Data
+                string storedIP = dataRetreive.GetValueFromBson(ClientDatabaseEnum.IPAddress);
+                string storedHost = dataRetreive.GetValueFromBson(ClientDatabaseEnum.Hostname);
+                string storedAuth = dataRetreive.GetValueFromBson(ClientDatabaseEnum.AuthenticationString);
+                #endregion
+
+                #region Check Authentication String
+                Output.Message(OutputType.Info, "Matching Hashed Authentication Strings");
+
+                if (ServerHash != storedAuth)
+                    return LoginResponse.ServerError;
+
+                if (ServerHash != AuthString)
+                    return LoginResponse.Failed;
+                #endregion
 
             }
 
